@@ -6,6 +6,7 @@ import {Link} from 'react-router-dom'
 
 
 import useStyles from './styles';
+import logo from '../../assets/salute.png';
 
 const Navbar = ({totalItems}) => {
 
@@ -16,7 +17,7 @@ const Navbar = ({totalItems}) => {
             <AppBar position="fixed"  className={classes.appBar} color="inherit" >
                 <Toolbar>
                     <Typography variant="h6" className={classes.title} color="inherit" >
-                        <img src={"none"} alt="" height="25px" className={classes.image} />
+                        <img src={logo} alt="" height="25px" className={classes.image} />
                         Salute Electronics
                     </Typography>
                     <div className={classes.grow}/>
