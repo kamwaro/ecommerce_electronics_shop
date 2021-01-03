@@ -6,7 +6,7 @@ import {commerce} from '../../../lib/Commerce'
 import AddressForm from '../AddressForm';
 import PaymentForm from '../PaymentForm';
 
-const steps=["Shipping address", "Payment details"]
+const steps=["Shipping address", "Payment details"];
 
 const Checkout = ({cart, order, onCaptureCheckout, error }) => {
     const [activeStep, setActiveStep] = useState(0);
@@ -29,14 +29,14 @@ const Checkout = ({cart, order, onCaptureCheckout, error }) => {
         }
         catch (error) {
             console.log(error)
-            history.pushState('/')
+            if (activeStep !== steps.length) history.push('/');
         }
        }
 
        console.log('I am getting things done!')
        console.log(cart);
        generateToken();
-    }, [])
+    }, [cart, history]);
 
     const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1 )
     const backStep = () => setActiveStep((prevActiveStep) => prevActiveStep - 1 )
@@ -98,7 +98,7 @@ const Checkout = ({cart, order, onCaptureCheckout, error }) => {
         <main className={classes.layout}>
             <Paper className={classes.paper}>
                 <Typography variant="h4" align="center">Checkout</Typography>
-                <Stepper active={0} className={classes.stepper}>
+                <Stepper activeStep={activeStep} className={classes.stepper}>
                     {steps.map((step) => (
                         <Step key={step}>
                             <StepLabel>{step}</StepLabel>
