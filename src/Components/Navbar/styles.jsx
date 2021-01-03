@@ -1,4 +1,5 @@
-import {makeStyles, fade} from "@material-ui/core/styles"
+import {makeStyles, fade} from "@material-ui/core/styles";
+
 
 const drawerWidth = 0;
 
@@ -13,6 +14,7 @@ export default makeStyles((theme) => (
             }
         },
         title:{
+            fontFamily:theme.typography.fontFamily[3],
             flexGrow:1,
             alignItems:"center",
             display:"flex",
