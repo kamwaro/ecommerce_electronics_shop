@@ -6,8 +6,9 @@ import { Link } from 'react-router-dom';
 import { commerce } from '../../lib/Commerce';
 import FormInput from './CustomTextField';
 
-const AddressForm = ({ checkoutToken, test }) => {
-  const [shippingCountries, setShippingCountries] = useState([{country: "Kenya", code: "KE"},{country: "Uganda", code: "UG"}, {country: "Rwanda", code: "RW"}]);
+
+const AddressForm = ({ checkoutToken, next }) => {
+  const [shippingCountries, setShippingCountries] = useState([]);
   const [shippingCountry, setShippingCountry] = useState('');
   const [shippingSubdivisions, setShippingSubdivisions] = useState([]);
   const [shippingSubdivision, setShippingSubdivision] = useState('');
@@ -16,10 +17,8 @@ const AddressForm = ({ checkoutToken, test }) => {
   const methods = useForm();
 
   const fetchShippingCountries = async (checkoutTokenId) => {
-    const response  = await commerce.services.localeListShippingCountries(checkoutTokenId);
-    console.log("res ", response)
-    const {countries} = response;
-    console.log(countries);
+    const { countries } = await commerce.services.localeListShippingCountries(checkoutTokenId);
+
     setShippingCountries(countries);
     setShippingCountry(Object.keys(countries)[0]);
   };
@@ -38,30 +37,23 @@ const AddressForm = ({ checkoutToken, test }) => {
     setShippingOption(options[0].id);
   };
 
-  console.log(shippingCountries);
-
-  // useEffect(() => {
-  //   fetchShippingCountries(checkoutToken.id);
-  // }, [checkoutToken.id]);
+  useEffect(() => {
+    fetchShippingCountries(checkoutToken.id);
+  }, []);
 
   useEffect(() => {
-    if (shippingCountry){
-      const found = shippingCountries.filter(s => s.country === shippingCountry)
-      if(found.length){
-        fetchSubdivisions(found[0].code)
-      }
-    };
+    if (shippingCountry) fetchSubdivisions(shippingCountry);
   }, [shippingCountry]);
 
   useEffect(() => {
     if (shippingSubdivision) fetchShippingOptions(checkoutToken.id, shippingCountry, shippingSubdivision);
-  }, [shippingSubdivision,checkoutToken.id,shippingCountry]);
+  }, [shippingSubdivision]);
 
   return (
     <>
       <Typography variant="h6" gutterBottom>Shipping address</Typography>
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit((data) => test({ ...data, shippingCountry, shippingSubdivision, shippingOption }))}>
+        <form onSubmit={methods.handleSubmit((data) => next({ ...data, shippingCountry, shippingSubdivision, shippingOption }))}>
           <Grid container spacing={3}>
             <FormInput required name="firstName" label="First name" />
             <FormInput required name="lastName" label="Last name" />
@@ -72,9 +64,9 @@ const AddressForm = ({ checkoutToken, test }) => {
             <Grid item xs={12} sm={6}>
               <InputLabel>Shipping Country</InputLabel>
               <Select value={shippingCountry} fullWidth onChange={(e) => setShippingCountry(e.target.value)}>
-                {shippingCountries.map((item) => (
-                  <MenuItem key={item.code} value={item.country}>
-                    {item.country}
+                {Object.entries(shippingCountries).map(([code, name]) => ({ id: code, label: name })).map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.label}
                   </MenuItem>
                 ))}
               </Select>
@@ -89,7 +81,7 @@ const AddressForm = ({ checkoutToken, test }) => {
                 ))}
               </Select>
             </Grid>
-            {/* <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={6}>
               <InputLabel>Shipping Options</InputLabel>
               <Select value={shippingOption} fullWidth onChange={(e) => setShippingOption(e.target.value)}>
                 {shippingOptions.map((sO) => ({ id: sO.id, label: `${sO.description} - (${sO.price.formatted_with_symbol})` })).map((item) => (
@@ -98,7 +90,7 @@ const AddressForm = ({ checkoutToken, test }) => {
                   </MenuItem>
                 ))}
               </Select>
-            </Grid> */}
+            </Grid>
           </Grid>
           <br />
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
