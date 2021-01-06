@@ -21,23 +21,16 @@ const Checkout = ({cart, order, onCaptureCheckout, error }) => {
 
         try {
             const token = await commerce.checkout.generateToken(cart.id, { type:"cart" } );
-            console.log(token)
-            console.log(`I am not getting the ${token}`)
-            setCheckoutToken(token);
-            
-            
+        
+            setCheckoutToken(token);  
         }
         catch (error) {
             console.log(error)
             if (activeStep !== steps.length) history.push('/');
         }
        }
-
-       console.log('I am getting things done!')
-       console.log(cart);
        generateToken();
     }, [cart, history]);
-
     const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1 )
     const backStep = () => setActiveStep((prevActiveStep) => prevActiveStep - 1 )
 

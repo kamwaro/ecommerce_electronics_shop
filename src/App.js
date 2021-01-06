@@ -1,17 +1,18 @@
-import React, {useState, useEffect} from 'react'
-import {commerce} from './lib/Commerce'
-import {Products,Navbar,Cart,Checkout } from './Components';
-import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import {CssBaseline} from '@material-ui/core'
+import { commerce } from './lib/Commerce'
+import { Products, Navbar, Cart, Checkout } from './Components';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 
 const App = () => {
-
+    const [mobileOpen, setMobileOpen] = React.useState(false);
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState({});
     const [order, setOrder] = useState({});
     const [errorMessage, setErrorMessage] = useState('')
 
     const fetchProducts = async () => {
-        const {data} = await commerce.products.list();
+        const { data } = await commerce.products.list();
         setProducts(data)
 
     }
@@ -31,13 +32,13 @@ const App = () => {
         setCart(cart);
     }
 
-    const handleRemoveFromCart = async(productId) => {
-        const {cart} = await commerce.cart.remove(productId)
+    const handleRemoveFromCart = async (productId) => {
+        const { cart } = await commerce.cart.remove(productId)
         setCart(cart);
     }
 
-    const handleEmptyCart = async() => {
-        const {cart} = await commerce.cart.empty();
+    const handleEmptyCart = async () => {
+        const { cart } = await commerce.cart.empty();
         setCart(cart)
     }
 
@@ -48,49 +49,52 @@ const App = () => {
 
     const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
 
-             try {
-                 const incomingOrder = await commerce.checkout.capture(checkoutTokenId, newOrder);
-                 setOrder(incomingOrder);
-                 refreshCart();
+        try {
+            const incomingOrder = await commerce.checkout.capture(checkoutTokenId, newOrder);
+            setOrder(incomingOrder);
+            refreshCart();
 
-             } catch (error) {
-                 setErrorMessage(error.data.error.message)
-             }
+        } catch (error) {
+            setErrorMessage(error.data.error.message)
+        }
     }
 
-    useEffect(() =>
-     { 
-         fetchProducts();
-         fetchCart();
+    useEffect(() => {
+        fetchProducts();
+        fetchCart();
 
-     },[])
-     console.log(products)
+    }, [])
+    console.log(products)
+
+
+    const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
     return (
         <Router>
-             <div>
-            <Navbar totalItems={cart.total_items}/>
-            <Switch>
-                <Route exact path="/">
-                    <Products products={products} onAddToCart={handleAddToCart}/>
-                </Route>
-                <Route exact path="/cart">
-                    <Cart
-                     cart={cart}
-                     handleEmptyCart={handleEmptyCart}
-                     handleRemoveFromCart={handleRemoveFromCart}
-                     handleUpdateCartQty={handleUpdateCartQty}
-                     />
-                </Route>
+            <div style={{ display: 'flex' }}>
+                <Navbar totalItems={cart.total_items} handleDrawerToggle={handleDrawerToggle} />
+                <CssBaseline />
+                <Switch>
+                    <Route exact path="/">
+                        <Products products={products} onAddToCart={handleAddToCart} />
+                    </Route>
+                    <Route exact path="/cart">
+                        <Cart
+                            cart={cart}
+                            handleEmptyCart={handleEmptyCart}
+                            handleRemoveFromCart={handleRemoveFromCart}
+                            handleUpdateCartQty={handleUpdateCartQty}
+                        />
+                    </Route>
 
-                <Route exact path="/checkout">
-                    <Checkout cart={cart} order={order} onCaptureCheckout={handleCaptureCheckout} error={errorMessage}/>
-                </Route>
-            </Switch>
-            
-        </div>
+                    <Route exact path="/checkout">
+                        <Checkout cart={cart} order={order} onCaptureCheckout={handleCaptureCheckout} error={errorMessage} />
+                    </Route>
+                </Switch>
+
+            </div>
         </Router>
-       
+
     )
 }
 

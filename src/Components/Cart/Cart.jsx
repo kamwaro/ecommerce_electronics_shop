@@ -10,7 +10,7 @@ const Cart = ( {cart, handleEmptyCart, handleRemoveFromCart, handleUpdateCartQty
      
 
     const EmptyCart = () => (
-        <Typography variant="subtitle1">You have no items in your shopping cart, start adding some!</Typography>
+        <Typography variant="subtitle1">You have no items in your shopping cart, <Link className={classes.link} to="/">start adding some</Link>!</Typography>
     )
 
     const FilledCart = () => (
@@ -25,20 +25,17 @@ const Cart = ( {cart, handleEmptyCart, handleRemoveFromCart, handleUpdateCartQty
         </Grid>
 
         <div className={classes.cardDetails}>
-            <Typography variant="h4">
-                Subtotal:{cart.subtotal.formatted_with_symbol}
-            </Typography>
-
+            <Typography variant="h4">Subtotal:{cart.subtotal.formatted_with_symbol}</Typography>
             <div>
                 <Button className={classes.emptyButton} color="secondary" size="large" type="button" variant="contained" onClick={() => handleEmptyCart()} >
                     Empty Cart
                 </Button>
-                <Button className={classes.checkOutButton} component={Link} to="/checkout" color="primary" size="large" type="button" variant="contained">
+                <Button className={classes.checkoutButton} component={Link} to="/checkout" color="primary" size="large" type="button" variant="contained">
                     Check out
                 </Button>
             </div>
         </div>
-        </>
+       </>
     )
        
 
